@@ -1,12 +1,20 @@
 package home.stanislavpoliakov.meet17_practice.presentation.presenter;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.inject.Inject;
+
+import home.stanislavpoliakov.meet17_practice.WeatherApplication;
+import home.stanislavpoliakov.meet17_practice.dagger2.DaggerPresenterComponent;
+import home.stanislavpoliakov.meet17_practice.dagger2.PresenterComponent;
 import home.stanislavpoliakov.meet17_practice.domain.DomainContract;
 import home.stanislavpoliakov.meet17_practice.domain.Weather;
 import home.stanislavpoliakov.meet17_practice.presentation.ViewContract;
@@ -14,9 +22,9 @@ import static home.stanislavpoliakov.meet17_practice.presentation.presenter.Conv
 
 
 public class Presenter implements DomainContract.Presenter{
-    private static final String TAG = "meet15_logs";
+    private static final String TAG = "meet17_logs";
     private ViewContract mView;
-    private DomainContract.UseCase useCaseInteractor; // Interactor
+    @Inject DomainContract.UseCase useCaseInteractor; // Interactor
     private Map<String, String> cities = new HashMap<>();
     private String timeZone;
     private List<Bundle> details;
@@ -24,6 +32,9 @@ public class Presenter implements DomainContract.Presenter{
     public Presenter(ViewContract view) {
         this.mView = view;
         init();
+
+        WeatherApplication.getPresenterComponent().inject(this);
+        //mView.initUIViews();
     }
 
     /**
@@ -123,7 +134,21 @@ public class Presenter implements DomainContract.Presenter{
     @Override
     public void onSpinnerSelected(String cityName) {
         String cityLocation = cities.get(cityName);
-        useCaseInteractor.onCitySelected(cityLocation);
+        //useCaseInteractor.onCitySelected(cityLocation);
+        FetchDataTask fetchDataTask = new FetchDataTask();
+        fetchDataTask.execute(cityLocation);
+    }
+
+    private class FetchDataTask extends AsyncTask<String, Void, Weather> {
+        @Override
+        protected Weather doInBackground(String... strings) {
+            return useCaseInteractor.getData(strings[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Weather weather) {
+            show(weather);
+        }
     }
 
     /**
@@ -136,11 +161,11 @@ public class Presenter implements DomainContract.Presenter{
         displayDetails(details.get(itemPosition));
     }
 
-    @Override
+    /*@Override
     public void bindImplementations(DomainContract.UseCase useCaseInteractor,
                                     DomainContract.NetworkOperations networkGateway,
                                     DomainContract.DatabaseOperations databaseGateway) {
-        this.useCaseInteractor = useCaseInteractor;
+        //this.useCaseInteractor = useCaseInteractor;
         useCaseInteractor.bindImplementations(this, networkGateway, databaseGateway);
-    }
+    }*/
 }

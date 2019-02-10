@@ -54,11 +54,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void continueInit(ViewContract mActivity) {
-        Presenter presenter = new Presenter(mActivity);
-        UseCaseInteractor interactor = new UseCaseInteractor();
-        NetworkGateway networkGateway = new NetworkGateway();
-        DatabaseGateway databaseGateway = new DatabaseGateway(getApplicationContext());
+        Presenter presenter = null;
+        UseCaseInteractor interactor = null;
+        NetworkGateway networkGateway = null;
+        DatabaseGateway databaseGateway = null;
 
-        mActivity.bindImplementations(presenter, interactor, networkGateway, databaseGateway);
+       // mActivity.bindImplementations(presenter, interactor, networkGateway, databaseGateway);
     }
 }

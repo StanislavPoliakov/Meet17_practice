@@ -18,21 +18,28 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import home.stanislavpoliakov.meet17_practice.R;
+import home.stanislavpoliakov.meet17_practice.WeatherApplication;
+import home.stanislavpoliakov.meet17_practice.dagger2.DaggerViewComponent;
+import home.stanislavpoliakov.meet17_practice.dagger2.ViewComponent;
+import home.stanislavpoliakov.meet17_practice.dagger2.ViewModule;
 import home.stanislavpoliakov.meet17_practice.domain.DomainContract;
 import home.stanislavpoliakov.meet17_practice.presentation.ViewContract;
 import home.stanislavpoliakov.meet17_practice.presentation.presenter.BriefData;
 
 public class ViewActivity extends AppCompatActivity implements ViewContract, Callback {
-    private static final String TAG = "meet15_logs";
+    private static final String TAG = "meet17_logs";
     private TextView weatherLabel;
     private RecyclerView recyclerView;
     private MyAdapter mAdapter;
     private Spinner spinner;
     private List<BriefData> data;
-    private DomainContract.Presenter mPresenter;
+    @Inject DomainContract.Presenter mPresenter;
     private static Handler mHandler;
     private FragmentManager fragmentManager = getSupportFragmentManager();
+    private ViewComponent viewComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,17 +47,12 @@ public class ViewActivity extends AppCompatActivity implements ViewContract, Cal
         setContentView(R.layout.view_activity);
         Message message = Message.obtain(null, 1, this);
         mHandler.sendMessage(message);
-    }
 
-    @Override
-    public void bindImplementations(DomainContract.Presenter presenter,
-                                    DomainContract.UseCase useCaseInteractor,
-                                    DomainContract.NetworkOperations networkGateway,
-                                    DomainContract.DatabaseOperations databaseGateway) {
-        this.mPresenter = presenter;
-        mPresenter.bindImplementations(useCaseInteractor, networkGateway, databaseGateway);
+        viewComponent = DaggerViewComponent.builder()
+                .viewModule(new ViewModule(this))
+                .build();
+        viewComponent.inject(this);
         initUIViews();
-
     }
 
     @Override
@@ -60,7 +62,6 @@ public class ViewActivity extends AppCompatActivity implements ViewContract, Cal
 
     @Override
     public void setUserChoice(List<String> cities) {
-
     }
 
     @Override
@@ -131,6 +132,13 @@ public class ViewActivity extends AppCompatActivity implements ViewContract, Cal
 
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        viewComponent = null;
+        ((WeatherApplication) getApplication()).destroyComponents();
     }
 
     @Override

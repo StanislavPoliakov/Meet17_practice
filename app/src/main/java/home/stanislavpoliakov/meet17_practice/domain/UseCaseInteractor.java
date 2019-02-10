@@ -4,19 +4,33 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.os.Process;
+import android.util.Log;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.inject.Inject;
+
+import home.stanislavpoliakov.meet17_practice.WeatherApplication;
+import home.stanislavpoliakov.meet17_practice.dagger2.DaggerInteractorComponent;
+import home.stanislavpoliakov.meet17_practice.dagger2.InteractorComponent;
 
 public class UseCaseInteractor implements DomainContract.UseCase {
-    private static final String TAG = "meet15_logs";
-    private DomainContract.Presenter presenter;
-    private DomainContract.NetworkOperations networkGateway;
-    private DomainContract.DatabaseOperations databaseGateway;
-    private WorkThread workThread = new WorkThread();
+    private static final String TAG = "meet17_logs";
+    //private DomainContract.Presenter presenter;
+    @Inject DomainContract.NetworkOperations networkGateway;
+    @Inject DomainContract.DatabaseOperations databaseGateway;
+    //private WorkThread workThread = new WorkThread();
 
     /**
      * В конструкторе запускаем в работу workThread (из main)
      */
     public UseCaseInteractor() {
-        workThread.start();
+        //workThread.start();
+        WeatherApplication.getInteractorComponent().inject(this);
+        Log.d(TAG, "UseCaseInteractor: network = " + networkGateway);
     }
 
     /**
@@ -25,13 +39,29 @@ public class UseCaseInteractor implements DomainContract.UseCase {
      * @param cityLocation координаты города в формате String
      */
     @Override
-    public void onCitySelected(String cityLocation) {
-        workThread.fetchWeather(cityLocation);
+    public Weather getData(String cityLocation) {
+       // workThread.fetchWeather(cityLocation);
+        ExecutorService pool = Executors.newSingleThreadExecutor();
+        Callable<Weather> getWeather = () -> {
+            Weather weather = networkGateway.fetchData(cityLocation);
+            databaseGateway.saveData(weather);
+            return databaseGateway.loadData();
+        };
+        try {
+            return pool.submit(getWeather).get();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        } catch (ExecutionException ex) {
+            ex.printStackTrace();
+        } finally {
+            pool.shutdown();
+        }
+        return null;
     }
 
-    /**
+   /* *//**
      * Work Thread
-     */
+     *//*
     private class WorkThread extends HandlerThread {
         private static final int FETCH_WEATHER_DATA = 1;
         private static final int SAVE_WEATHER_DATA = 2;
@@ -42,25 +72,25 @@ public class UseCaseInteractor implements DomainContract.UseCase {
         // внутренних задач.
         private Handler mHandler;
 
-        /**
+        *//**
          * В конструкторе понижаем приоритет потока до фоновой задачи
-         */
+         *//*
         WorkThread() {
             super("WorkThread", Process.THREAD_PRIORITY_BACKGROUND);
         }
 
-        /**
+        *//**
          * Определяем Handler в методе подготовки Looper'-а
-         */
+         *//*
         @Override
         protected void onLooperPrepared() {
             super.onLooperPrepared();
             mHandler = new Handler(getLooper()) {
 
-                /**
+                *//**
                  * Переопределяем поведение при приеме сообщений
                  * @param msg сообщение
-                 */
+                 *//*
                 @Override
                 public void handleMessage(Message msg) {
                     Weather weather;
@@ -94,38 +124,38 @@ public class UseCaseInteractor implements DomainContract.UseCase {
             };
         }
 
-        /**
+        *//**
          * Метод для начала цепочки действий
-         */
+         *//*
         void fetchWeather(String cityLocation) {
             Message message = Message.obtain(null, FETCH_WEATHER_DATA, cityLocation);
             mHandler.sendMessage(message);
         }
 
-        /**
+        *//**
          * Внутренний метод класса для получения данных
          * @return объект данных из Интернета
-         */
+         *//*
         private Weather getWeatherFromNetwork(String cityLocation) {
             return networkGateway.fetchData(cityLocation);
         }
 
-        /**
+        *//**
          * Внутренний метод класса для сохранения данных в базе.
          * Если записей нет - создаем, если есть - обновляем
-         * @param weather данные, которые необходимо сохранить
-         */
+         //* @param weather данные, которые необходимо сохранить
+         *//*
         private void saveWeatherData(Weather weather) {
             databaseGateway.saveData(weather);
         }
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void bindImplementations(DomainContract.Presenter presenter,
                                     DomainContract.NetworkOperations networkGateway,
                                     DomainContract.DatabaseOperations databaseGateway) {
-        this.presenter = presenter;
-        this.networkGateway = networkGateway;
-        this.databaseGateway = databaseGateway;
-    }
+        //this.presenter = presenter;
+        //this.networkGateway = networkGateway;
+        //this.databaseGateway = databaseGateway;
+    }*/
 }

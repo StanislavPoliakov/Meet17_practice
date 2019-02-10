@@ -32,9 +32,9 @@ public interface DomainContract {
          * @param networkGateway реализация сетевого шлюза
          * @param databaseGateway реализация шлюза базы данных
          */
-        void bindImplementations(DomainContract.UseCase useCaseInteractor,
+        /*void bindImplementations(DomainContract.UseCase useCaseInteractor,
                                  DomainContract.NetworkOperations networkGateway,
-                                 DomainContract.DatabaseOperations databaseGateway);
+                                 DomainContract.DatabaseOperations databaseGateway);*/
     }
 
 
@@ -49,7 +49,7 @@ public interface DomainContract {
          * дальнейшей отрисовки
          * @param cityLocation координаты города в формате String
          */
-        void onCitySelected(String cityLocation);
+        Weather getData(String cityLocation);
 
 
         /**
@@ -58,9 +58,9 @@ public interface DomainContract {
          * @param networkGateway реализация сетевого шлюза
          * @param databaseGateway реализация шлюза базы данных
          */
-        void bindImplementations(DomainContract.Presenter presenter,
+        /*void bindImplementations(DomainContract.Presenter presenter,
                                  DomainContract.NetworkOperations networkGateway,
-                                 DomainContract.DatabaseOperations databaseGateway);
+                                 DomainContract.DatabaseOperations databaseGateway);*/
     }
 
 

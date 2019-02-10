@@ -19,9 +19,9 @@ public interface ViewContract {
 
     void initUIViews();
 
-    void bindImplementations(DomainContract.Presenter presenter,
+    /*void bindImplementations(DomainContract.Presenter presenter,
                              DomainContract.UseCase useCaseInteractor,
                              DomainContract.NetworkOperations networkGateway,
-                             DomainContract.DatabaseOperations databaseGateway);
+                             DomainContract.DatabaseOperations databaseGateway);*/
 }
 
