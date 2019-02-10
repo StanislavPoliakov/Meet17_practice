@@ -4,6 +4,7 @@ import dagger.Component;
 import dagger.Module;
 import home.stanislavpoliakov.meet17_practice.presentation.view.ViewActivity;
 
+@ApplicationScope
 @Component(modules = {ViewModule.class})
 public interface ViewComponent {
 

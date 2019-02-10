@@ -10,6 +10,7 @@ import home.stanislavpoliakov.meet17_practice.domain.UseCaseInteractor;
 @Module
 public class PresenterModule {
 
+    @ApplicationScope
     @Provides
     public DomainContract.UseCase provideUseCaseInteractor() {
         return new UseCaseInteractor();

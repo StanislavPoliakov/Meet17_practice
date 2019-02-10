@@ -11,11 +11,13 @@ import home.stanislavpoliakov.meet17_practice.domain.DomainContract;
 @Module
 public class InteractorModule {
 
+    @ApplicationScope
     @Provides
     public DomainContract.NetworkOperations provideNetworkGateway() {
         return new NetworkGateway();
     }
 
+    @ApplicationScope
     @Provides
     public DomainContract.DatabaseOperations provideDatabaseGateway(Context context) {
         return new DatabaseGateway(context);
