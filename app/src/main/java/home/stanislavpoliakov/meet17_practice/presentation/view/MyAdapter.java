@@ -17,7 +17,7 @@ import home.stanislavpoliakov.meet17_practice.R;
 import home.stanislavpoliakov.meet17_practice.presentation.presenter.BriefData;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-    private static final String TAG = "meet15_logs";
+    private static final String TAG = "meet17_logs";
     private List<BriefData> data;
     private Callback mActivity;
 

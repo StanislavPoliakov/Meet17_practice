@@ -33,8 +33,8 @@ public class Presenter implements DomainContract.Presenter{
         this.mView = view;
         init();
 
+        //В конструкторе просим dagger инжектировать зависимости
         WeatherApplication.getPresenterComponent().inject(this);
-        //mView.initUIViews();
     }
 
     /**
@@ -134,11 +134,15 @@ public class Presenter implements DomainContract.Presenter{
     @Override
     public void onSpinnerSelected(String cityName) {
         String cityLocation = cities.get(cityName);
-        //useCaseInteractor.onCitySelected(cityLocation);
+
+        //Определяем и запускаем AsyncTask для работы с сетью и базой
         FetchDataTask fetchDataTask = new FetchDataTask();
         fetchDataTask.execute(cityLocation);
     }
 
+    /**
+     * Для запуска work-потока, с результатом в UI идеально подошел AsyncTask
+     */
     private class FetchDataTask extends AsyncTask<String, Void, Weather> {
         @Override
         protected Weather doInBackground(String... strings) {
@@ -160,12 +164,4 @@ public class Presenter implements DomainContract.Presenter{
     public void onViewHolderSelected(int itemPosition) {
         displayDetails(details.get(itemPosition));
     }
-
-    /*@Override
-    public void bindImplementations(DomainContract.UseCase useCaseInteractor,
-                                    DomainContract.NetworkOperations networkGateway,
-                                    DomainContract.DatabaseOperations databaseGateway) {
-        //this.useCaseInteractor = useCaseInteractor;
-        useCaseInteractor.bindImplementations(this, networkGateway, databaseGateway);
-    }*/
 }

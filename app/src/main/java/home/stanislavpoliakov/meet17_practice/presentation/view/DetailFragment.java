@@ -19,7 +19,7 @@ import home.stanislavpoliakov.meet17_practice.R;
  * Класс фрагмента детальной информации
  */
 public class DetailFragment extends DialogFragment {
-    private static final String TAG = "meet13_logs";
+    private static final String TAG = "meet17_logs";
 
     /**
      * Получаем объект класса в статическом методе для FragmentManager

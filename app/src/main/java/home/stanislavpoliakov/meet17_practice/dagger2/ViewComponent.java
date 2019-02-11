@@ -1,9 +1,11 @@
 package home.stanislavpoliakov.meet17_practice.dagger2;
 
 import dagger.Component;
-import dagger.Module;
 import home.stanislavpoliakov.meet17_practice.presentation.view.ViewActivity;
 
+/**
+ * Компонент View-уровня
+ */
 @ApplicationScope
 @Component(modules = {ViewModule.class})
 public interface ViewComponent {

@@ -10,6 +10,11 @@ import home.stanislavpoliakov.meet17_practice.presentation.presenter.Presenter;
 public class ViewModule {
     private ViewContract view;
 
+    /**
+     * Через конструктор (то есть через Component.builder) предоставляем информацию о View (которая
+     * передается в конструктор Presenter'-а)
+     * @param view
+     */
     public ViewModule(ViewContract view) {
         this.view = view;
     }

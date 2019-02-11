@@ -2,14 +2,18 @@ package home.stanislavpoliakov.meet17_practice;
 
 import android.app.Application;
 import android.util.Log;
-
 import home.stanislavpoliakov.meet17_practice.dagger2.ContextModule;
 import home.stanislavpoliakov.meet17_practice.dagger2.DaggerInteractorComponent;
 import home.stanislavpoliakov.meet17_practice.dagger2.DaggerPresenterComponent;
 import home.stanislavpoliakov.meet17_practice.dagger2.InteractorComponent;
 import home.stanislavpoliakov.meet17_practice.dagger2.PresenterComponent;
-import home.stanislavpoliakov.meet17_practice.presentation.presenter.Presenter;
 
+/**
+ * Компоненты для dagger уровня приложения (для Presenter и для Model (UseCaseInteractor))
+ * иницииализируем здесь.
+ *
+ * Помним, что Application нужно добавить в Manifest
+ */
 public class WeatherApplication extends Application {
     private static final String TAG = "meet17_logs";
     private static InteractorComponent interactorComponent;
@@ -46,6 +50,5 @@ public class WeatherApplication extends Application {
     protected PresenterComponent buildPresenterComponent() {
         return DaggerPresenterComponent.builder()
                 .build();
-        //return DaggerPresenterComponent.create();
     }
 }

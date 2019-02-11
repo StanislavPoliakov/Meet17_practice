@@ -9,7 +9,7 @@ import home.stanislavpoliakov.meet17_practice.domain.DomainContract;
 import retrofit2.Response;
 
 public class NetworkGateway implements DomainContract.NetworkOperations {
-    private static final String TAG = "meet15_logs";
+    private static final String TAG = "meet17_logs";
 
     @Override
     public Weather fetchData(String cityLocation) {

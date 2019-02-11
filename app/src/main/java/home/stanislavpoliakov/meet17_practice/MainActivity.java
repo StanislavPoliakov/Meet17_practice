@@ -18,9 +18,8 @@ import home.stanislavpoliakov.meet17_practice.presentation.presenter.Presenter;
 import home.stanislavpoliakov.meet17_practice.presentation.view.ViewActivity;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "meet15_logs";
+    private static final String TAG = "meet17_logs";
     private Map<String, String> cities = new HashMap<>();
-    private ViewContract mActivity;
 
 
     @Override
@@ -31,6 +30,11 @@ public class MainActivity extends AppCompatActivity {
         execute(cities.keySet());
     }
 
+    /**
+     * Поскольку MainActivity - это точка входа в приложение, однако View - это другая активити,
+     * то мы просто запускаем View отсюда
+     * @param cityList список городов (лень делать через SharedPref :) )
+     */
     private void execute(Set<String> cityList) {
         cities.put("Москва", "55.7522200, 37.6155600");
         cities.put("Владивосток", "43.1056200, 131.8735300");
@@ -40,25 +44,8 @@ public class MainActivity extends AppCompatActivity {
         cities.put("Санта-Крус-де-Тенерифе", "28.4682400, -16.2546200");
         cities.put("Нью-Йорк", "40.7142700, -74.0059700");
 
-
-        Handler uiHandler = new Handler(msg -> {
-            mActivity = (ViewContract) msg.obj;
-
-            continueInit(mActivity);
-            return true;
-        });
-
-        Intent intent = ViewActivity.newIntent(this, uiHandler);
+        Intent intent = ViewActivity.newIntent(this);
         intent.putStringArrayListExtra("cities", new ArrayList<>(cityList));
         startActivity(intent);
-    }
-
-    private void continueInit(ViewContract mActivity) {
-        Presenter presenter = null;
-        UseCaseInteractor interactor = null;
-        NetworkGateway networkGateway = null;
-        DatabaseGateway databaseGateway = null;
-
-       // mActivity.bindImplementations(presenter, interactor, networkGateway, databaseGateway);
     }
 }

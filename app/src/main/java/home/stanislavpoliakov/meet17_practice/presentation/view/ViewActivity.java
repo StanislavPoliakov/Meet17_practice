@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.UiThread;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,7 +38,6 @@ public class ViewActivity extends AppCompatActivity implements ViewContract, Cal
     private Spinner spinner;
     private List<BriefData> data;
     @Inject DomainContract.Presenter mPresenter;
-    private static Handler mHandler;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private ViewComponent viewComponent;
 
@@ -45,48 +45,71 @@ public class ViewActivity extends AppCompatActivity implements ViewContract, Cal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_activity);
-        Message message = Message.obtain(null, 1, this);
-        mHandler.sendMessage(message);
 
+        // Компонент уровня View определяем прям в Activity
         viewComponent = DaggerViewComponent.builder()
                 .viewModule(new ViewModule(this))
                 .build();
         viewComponent.inject(this);
+
         initUIViews();
     }
 
+    /**
+     * Метод установки метки над списком RecyclerView, содержит IANA timeZone
+     * @param label
+     */
     @Override
     public void setLabel(String label) {
         weatherLabel.setText(label);
     }
 
+    /**
+     * Неиспользуемый метод
+     * @param cities
+     */
+    @Deprecated
     @Override
     public void setUserChoice(List<String> cities) {
     }
 
+    /**
+     * Поскольку схема параллельных вычислений изменилась (из HandlerThread в AsyncTask), то
+     * принудительный запуск в UI-Thread нам больше не нужен, но я оставил как напоминание
+     * @param wBriefData
+     */
+    @UiThread
     @Override
     public void displayBrief(List<BriefData> wBriefData) {
-        runOnUiThread(() -> {
+        //runOnUiThread(() -> {
             if (mAdapter == null) initRecyclerView(wBriefData);
             else updateRecyclerView(wBriefData);
-        });
+        //});
     }
 
+    /**
+     * См. выше
+     * @param detailInfo
+     */
+    @UiThread
     @Override
     public void showDetails(Bundle detailInfo) {
-        runOnUiThread(() -> {
+        //runOnUiThread(() -> {
             DetailFragment fragment = DetailFragment.newInstance();
             fragment.setArguments(detailInfo);
             fragmentManager.beginTransaction()
                     .add(fragment, "Detail")
                     .commitNow();
-        });
+       // });
     }
 
+    /**
+     * Метод инициализации UI-компонентов
+     */
     @Override
     public void initUIViews() {
         initLabel();
-        //initRecyclerView();
+        //initRecyclerView(); //Это как напоминание, что RecyclerView инициализируется не отсюда
         initSpinner();
 
     }
@@ -95,6 +118,10 @@ public class ViewActivity extends AppCompatActivity implements ViewContract, Cal
         weatherLabel = findViewById(R.id.weatherLabel);
     }
 
+    /**
+     * Метод инициализации RecyclerView
+     * @param wBriefData данные для отображения
+     */
     private void initRecyclerView(List<BriefData> wBriefData) {
         this.data = wBriefData;
         recyclerView = findViewById(R.id.recyclerView);
@@ -105,14 +132,20 @@ public class ViewActivity extends AppCompatActivity implements ViewContract, Cal
         recyclerView.setLayoutManager(layoutManager);
     }
 
+    /**
+     * Метод обновления RecyclerView
+     * @param newData
+     */
     private void updateRecyclerView(List<BriefData> newData) {
         mAdapter.onNewData(newData);
     }
 
+    /**
+     * Метод инициализации спиннера и его адаптера
+     */
     private void initSpinner() {
         spinner = findViewById(R.id.spinner);
         ArrayList<String> cities = this.getIntent().getStringArrayListExtra("cities");
-        //Log.d(TAG, "initSpinner: cities.size = " + cities.size());
 
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>
                 (this, android.R.layout.simple_spinner_dropdown_item, cities);
@@ -134,6 +167,9 @@ public class ViewActivity extends AppCompatActivity implements ViewContract, Cal
         });
     }
 
+    /**
+     * При уничтожении Activity осовобождаем выделенные Components (здесь и на уровне приложения)
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -146,8 +182,7 @@ public class ViewActivity extends AppCompatActivity implements ViewContract, Cal
         mPresenter.onViewHolderSelected(itemPosition);
     }
 
-    public static Intent newIntent(Context context, Handler handler) {
-        mHandler = handler;
+    public static Intent newIntent(Context context) {
         return new Intent(context, ViewActivity.class);
     }
 }
